@@ -34,7 +34,7 @@
             cursor: pointer;
             z-index: 10;
         }
-        #background {
+        video {
             display: none;
             position: absolute;
             top: 0;
@@ -139,7 +139,7 @@
     <div id="overlay" onclick="startBackground()">
         ♡
     </div>
-    <img id="background" src="background.gif" alt="Background Image" style="display: none; width: 100vw; height: 100vh; object-fit: cover;">
+    <video id="background" src="lol.mp4" autoplay loop muted style="display: none;"></video>
     <div id="box">
         <img id="blood-image" src="blood.jpg" alt="Blood Image">
         <div id="text">qs9x</div>
@@ -190,7 +190,9 @@
 
         function startBackground() {
             document.getElementById('overlay').style.display = 'none';
-            document.getElementById('background').style.display = 'block';
+            const backgroundVideo = document.getElementById('background');
+            backgroundVideo.style.display = 'block';
+            backgroundVideo.play(); // Start playing the video
 
             const box = document.getElementById('box');
             box.style.opacity = '1';
