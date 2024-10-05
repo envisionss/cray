@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>qs9x</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cloudflare-captcha/1.0.0/captcha.js"></script>
     <style>
         body {
             margin: 0;
@@ -60,7 +61,6 @@
             backdrop-filter: blur(10px);
             z-index: 5;
         }
-
         #coming-soon {
             color: white;
             font-size: 1.5rem;
@@ -160,7 +160,7 @@
     </style>
 </head>
 <body>
-    <div id="overlay" onclick="startBackground()">
+    <div id="overlay" onclick="handleStart()">
         ♡
     </div>
     <video id="background" src="lol.mp4" autoplay loop muted style="display: none;"></video>
@@ -202,7 +202,7 @@
     </div>
 
     <div id="link-text" onclick="showComingSoonNotification()" onmouseover="this.style.color='rgb(160, 160, 160)'" onmouseout="this.style.color='white'">
-        (coming soon)
+        Make Your Own Link For Free
     </div>
     
     <script>
@@ -236,10 +236,26 @@
                 }
             }, 1000);
         }
-    </script>
 
-    <script>
         const audio = document.getElementById('audio');
+
+        function handleStart() {
+            const captcha = new CloudflareCaptcha('0x4AAAAAAAwwVr2Fm-MRU04m');
+            captcha.execute();  // Trigger CAPTCHA challenge
+        }
+
+        function onCaptchaSuccess(token) {
+            console.log('CAPTCHA completed successfully. Token:', token);
+            startBackground();  // Proceed after successful CAPTCHA
+        }
+
+        function onCaptchaExpired() {
+            console.log('CAPTCHA expired. Please try again.');
+        }
+
+        function onCaptchaError(error) {
+            console.error('CAPTCHA error:', error);
+        }
 
         function startBackground() {
             document.getElementById('overlay').style.display = 'none';
@@ -285,32 +301,6 @@
         window.addEventListener('dragstart', (e) => {
             e.preventDefault();
         });
-
-        function showNotification() {
-            const notification = document.getElementById('notification');
-            const progress = document.getElementById('progress');
-            let width = 100;
-
-            setTimeout(() => {
-                notification.style.display = 'block';
-                notification.style.bottom = '20px';
-                notification.style.opacity = '1';
-            }, 10);
-
-            const progressInterval = setInterval(() => {
-                width -= 20;
-                progress.style.width = width + '%';
-
-                if (width <= 0) {
-                    clearInterval(progressInterval);
-                    notification.style.bottom = '-100px';
-                    notification.style.opacity = '0';
-                    setTimeout(() => {
-                        notification.style.display = 'none';
-                    }, 500);
-                }
-            }, 1000);
-        }
 
         const coords = { x: 0, y: 0 };
         const circles = document.querySelectorAll(".circle");
