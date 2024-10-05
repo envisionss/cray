@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>qs9x</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             margin: 0;
@@ -34,18 +33,6 @@
             align-items: center;
             cursor: pointer;
             z-index: 10;
-        }
-        #verification {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 20;
         }
         video {
             display: none;
@@ -173,15 +160,9 @@
     </style>
 </head>
 <body>
-    <div id="overlay" onclick="showCaptcha()">
+    <div id="overlay" onclick="startBackground()">
         ♡
     </div>
-
-    <div id="verification">
-        <div class="g-recaptcha" data-sitekey="6LdibFgqAAAAAG7GhUaIpiZur5rSHW7LCCHW3TDh"></div>
-        <button id="submit" style="margin-top: 20px;">Submit</button>
-    </div>
-
     <video id="background" src="lol.mp4" autoplay loop muted style="display: none;"></video>
     
     <div id="box">
@@ -228,23 +209,23 @@
         function showComingSoonNotification() {
             showNotification("Coming Soon..");
         }
-
+    
         function showNotification(message) {
             const notification = document.getElementById('notification');
             const progress = document.getElementById('progress');
             notification.textContent = message;  // Update the notification message
             let width = 100;
-
+    
             setTimeout(() => {
                 notification.style.display = 'block';
                 notification.style.bottom = '20px';
                 notification.style.opacity = '1';
             }, 10);
-
+    
             const progressInterval = setInterval(() => {
                 width -= 20;
                 progress.style.width = width + '%';
-
+    
                 if (width <= 0) {
                     clearInterval(progressInterval);
                     notification.style.bottom = '-100px';
@@ -255,47 +236,13 @@
                 }
             }, 1000);
         }
+    </script>
 
+    <script>
         const audio = document.getElementById('audio');
 
-        function showCaptcha() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('verification').style.display = 'block';
-        }
-
-        document.getElementById('submit').addEventListener('click', function() {
-            const response = grecaptcha.getResponse();
-            if (response.length === 0) {
-                alert('Please complete the CAPTCHA.');
-            } else {
-                verifyCaptcha(response);
-            }
-        });
-
-        function verifyCaptcha(response) {
-            // Replace with your server endpoint
-            fetch('/verify-captcha', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ captchaResponse: response })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    startBackground();
-                    document.getElementById('verification').style.display = 'none';
-                } else {
-                    alert('CAPTCHA verification failed. Please try again.');
-                }
-            })
-            .catch(error => {
-                console.error('Error verifying CAPTCHA:', error);
-            });
-        }
-
         function startBackground() {
+            document.getElementById('overlay').style.display = 'none';
             const backgroundVideo = document.getElementById('background');
             backgroundVideo.style.display = 'block';
             backgroundVideo.play(); // Start playing the video
@@ -338,6 +285,32 @@
         window.addEventListener('dragstart', (e) => {
             e.preventDefault();
         });
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            const progress = document.getElementById('progress');
+            let width = 100;
+
+            setTimeout(() => {
+                notification.style.display = 'block';
+                notification.style.bottom = '20px';
+                notification.style.opacity = '1';
+            }, 10);
+
+            const progressInterval = setInterval(() => {
+                width -= 20;
+                progress.style.width = width + '%';
+
+                if (width <= 0) {
+                    clearInterval(progressInterval);
+                    notification.style.bottom = '-100px';
+                    notification.style.opacity = '0';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        }
 
         const coords = { x: 0, y: 0 };
         const circles = document.querySelectorAll(".circle");
