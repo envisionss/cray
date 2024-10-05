@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>qs9x</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         body {
             margin: 0;
@@ -24,7 +25,7 @@
             left: 0;
             height: 100vh;
             width: 100vw;
-            background-color: rgba(23, 23, 23, 0.8);
+            background-color: rgba(255, 255, 255, 0.8);
             color: white;
             font-size: 2rem;
             font-weight: bold;
@@ -33,6 +34,18 @@
             align-items: center;
             cursor: pointer;
             z-index: 10;
+        }
+        #verification {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 20;
         }
         video {
             display: none;
@@ -45,12 +58,13 @@
             z-index: 0;
         }
         #box {
-            opacity: 0;
+            opacity: 0.45;
             transition: opacity 0.7s;
             position: absolute;
             width: 650px;
             height: 230px;
-            background-color: rgba(12, 12, 12, 0.56);
+            background-color: rgba(0, 0, 0, 0.56);
+            border: 2px solid rgba(0, 0, 0, 0.87);
             border-radius: 10px;
             display: flex;
             flex-direction: column;
@@ -58,6 +72,13 @@
             align-items: center;
             backdrop-filter: blur(10px);
             z-index: 5;
+        }
+
+        #coming-soon {
+            color: white;
+            font-size: 1.5rem;
+            font-family: sans-serif;
+            margin-top: 10px;
         }
         #blood-image {
             display: none;
@@ -70,7 +91,7 @@
         #text {
             opacity: 0;
             transition: opacity 0.7s;
-            color: white;
+            color: rgb(255, 255, 255);
             font-weight: bold;
             font-size: 1.8rem;
             font-family: sans-serif;
@@ -78,7 +99,7 @@
         #subtext {
             opacity: 0;
             transition: opacity 0.7s;
-            color: rgb(120, 120, 120);
+            color: rgb(255, 255, 255);
             font-weight: bold;
             font-size: 1.2rem;
             font-family: sans-serif;
@@ -88,7 +109,7 @@
             position: absolute;
             bottom: 10px;
             left: 10px;
-            width: 40px;
+            width: 30px;
             height: auto;
             opacity: 0;
             transition: opacity 0.7s;
@@ -133,26 +154,43 @@
             background-color: #76c7c0;
             transition: width 0.5s linear;
         }
+        #link-text {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white; /* Initial text color */
+            font-size: 1.2rem; /* Adjust font size as needed */
+            font-weight: bold; /* Make text bold */
+            cursor: pointer;
+            z-index: 10; /* Ensure it appears above other elements */
+            transition: color 0.3s; /* Smooth color transition */
+            display: none; /* Initially hidden */
+            padding: 10px; /* Add some padding */
+            border-radius: 8px; /* Round corners */
+            background-color: rgba(1, 1, 1, 0.65); /* Black background with 65% opacity */
+            backdrop-filter: blur(10px); /* Add blur effect */
+        }
     </style>
 </head>
 <body>
-    <div id="overlay" onclick="startBackground()">
+    <div id="overlay" onclick="showCaptcha()">
         ♡
     </div>
+
+    <div id="verification">
+        <div class="g-recaptcha" data-sitekey="6LdibFgqAAAAAG7GhUaIpiZur5rSHW7LCCHW3TDh"></div>
+        <button id="submit" style="margin-top: 20px;">Submit</button>
+    </div>
+
     <video id="background" src="lol.mp4" autoplay loop muted style="display: none;"></video>
+    
     <div id="box">
         <img id="blood-image" src="blood.jpg" alt="Blood Image">
         <div id="text">qs9x</div>
         <div id="subtext">"nothing matters anymore"</div>
         <img id="roblox-image" src="roblox.png" alt="Roblox Image" onclick="window.open('https://www.roblox.com/users/2372728401/profile', '_blank')">
     </div>
-    
-    <div id="volume-slider">
-        <div class="slider-container">
-            <div class="slider-thumb" id="slider-thumb"></div>
-        </div>
-    </div>
-    
+
     <audio id="audio" src="erm.mp3" preload="auto" loop></audio>
 
     <div class="circle"></div>
@@ -170,8 +208,7 @@
     <div class="circle"></div>
     <div class="circle"></div>
     <div class="circle"></div>
-    <div class="circle"></div>
-    <div class="circle"></div>
+    <div="circle"></div>
     <div class="circle"></div>
     <div class="circle"></div>
     <div class="circle"></div>
@@ -183,97 +220,19 @@
         </div>
     </div>
 
+    <div id="link-text" onclick="showComingSoonNotification()" onmouseover="this.style.color='rgb(160, 160, 160)'" onmouseout="this.style.color='white'">
+        Make Your Own Link For Free
+    </div>
+    
     <script>
-        const audio = document.getElementById('audio');
-        const sliderThumb = document.getElementById('slider-thumb');
-        const sliderContainer = document.querySelector('.slider-container');
-
-        function startBackground() {
-            document.getElementById('overlay').style.display = 'none';
-            const backgroundVideo = document.getElementById('background');
-            backgroundVideo.style.display = 'block';
-            backgroundVideo.play(); // Start playing the video
-
-            const box = document.getElementById('box');
-            box.style.opacity = '1';
-            box.style.display = 'flex';
-
-            setTimeout(() => {
-                document.getElementById('blood-image').style.display = 'block';
-                document.getElementById('blood-image').style.opacity = '1';
-            }, 50);
-
-            setTimeout(() => {
-                document.getElementById('text').style.opacity = '1';
-            }, 100);
-
-            setTimeout(() => {
-                document.getElementById('subtext').style.opacity = '1';
-            }, 150);
-
-            setTimeout(() => {
-                document.getElementById('roblox-image').style.display = 'block';
-                document.getElementById('roblox-image').style.opacity = '1';
-            }, 200);
-
-            setTimeout(() => {
-                document.getElementById('volume-slider').style.display = 'block';
-                document.getElementById('volume-slider').style.opacity = '1';
-            }, 250);
-
-            audio.play();
-            audio.volume = 1;
-            updateSliderPosition();
+        function showComingSoonNotification() {
+            showNotification("Coming Soon..");
         }
 
-        function changeVolume(newVolume) {
-            audio.volume = newVolume;
-            updateSliderPosition();
-        }
-
-        function updateSliderPosition() {
-            const sliderValue = audio.volume;
-            const thumb = document.getElementById('slider-thumb');
-            const containerWidth = sliderContainer.clientWidth;
-            const thumbWidth = thumb.clientWidth;
-            const newPosition = sliderValue * (containerWidth - thumbWidth / 2);
-            thumb.style.left = newPosition + 'px';
-        }
-
-        sliderThumb.addEventListener('mousedown', function(e) {
-            e.preventDefault();
-            const containerRect = sliderContainer.getBoundingClientRect();
-            const handleMouseMove = (event) => {
-                let offsetX = event.clientX - containerRect.left;
-                offsetX = Math.max(0, Math.min(offsetX, containerRect.width));
-                const newVolume = offsetX / containerRect.width;
-                changeVolume(newVolume);
-            };
-
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', () => {
-                document.removeEventListener('mousemove', handleMouseMove);
-            }, { once: true });
-        });
-
-        sliderContainer.addEventListener('click', (event) => {
-            const offsetX = event.clientX - sliderContainer.getBoundingClientRect().left;
-            const newVolume = Math.max(0, Math.min(offsetX / sliderContainer.clientWidth, 1));
-            changeVolume(newVolume);
-        });
-
-        window.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            showNotification();
-        });
-
-        window.addEventListener('dragstart', (e) => {
-            e.preventDefault();
-        });
-
-        function showNotification() {
+        function showNotification(message) {
             const notification = document.getElementById('notification');
             const progress = document.getElementById('progress');
+            notification.textContent = message;  // Update the notification message
             let width = 100;
 
             setTimeout(() => {
@@ -296,6 +255,89 @@
                 }
             }, 1000);
         }
+
+        const audio = document.getElementById('audio');
+
+        function showCaptcha() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('verification').style.display = 'block';
+        }
+
+        document.getElementById('submit').addEventListener('click', function() {
+            const response = grecaptcha.getResponse();
+            if (response.length === 0) {
+                alert('Please complete the CAPTCHA.');
+            } else {
+                verifyCaptcha(response);
+            }
+        });
+
+        function verifyCaptcha(response) {
+            // Replace with your server endpoint
+            fetch('/verify-captcha', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ captchaResponse: response })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    startBackground();
+                    document.getElementById('verification').style.display = 'none';
+                } else {
+                    alert('CAPTCHA verification failed. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error verifying CAPTCHA:', error);
+            });
+        }
+
+        function startBackground() {
+            const backgroundVideo = document.getElementById('background');
+            backgroundVideo.style.display = 'block';
+            backgroundVideo.play(); // Start playing the video
+
+            const box = document.getElementById('box');
+            box.style.opacity = '1';
+            box.style.display = 'flex';
+
+            // Show the link text when the overlay is clicked
+            const linkText = document.getElementById('link-text');
+            linkText.style.display = 'block';
+
+            setTimeout(() => {
+                document.getElementById('blood-image').style.display = 'block';
+                document.getElementById('blood-image').style.opacity = '1';
+            }, 50);
+
+            setTimeout(() => {
+                document.getElementById('text').style.opacity = '1';
+            }, 100);
+
+            setTimeout(() => {
+                document.getElementById('subtext').style.opacity = '1';
+            }, 150);
+
+            setTimeout(() => {
+                document.getElementById('roblox-image').style.display = 'block';
+                document.getElementById('roblox-image').style.opacity = '1';
+            }, 200);
+
+            audio.play();
+            audio.volume = 1;
+        }
+
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showNotification();
+        });
+
+        window.addEventListener('dragstart', (e) => {
+            e.preventDefault();
+        });
 
         const coords = { x: 0, y: 0 };
         const circles = document.querySelectorAll(".circle");
@@ -323,7 +365,7 @@
             circles.forEach(function (circle, index) {
                 circle.style.left = x - 12 + "px";
                 circle.style.top = y - 12 + "px";
-                circle.style.transform = `scale(${(circles.length - index) / circles.length}`;
+                circle.style.transform = `scale(${(circles.length - index) / circles.length})`;
 
                 circle.x = x;
                 circle.y = y;
