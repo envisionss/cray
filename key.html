@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Key Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        #key {
+            font-size: 24px;
+            margin: 20px;
+            border: 2px solid #BB86FC;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #1E1E1E;
+            width: 300px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        #key:hover {
+            border-color: #6200EE;
+            background-color: #272727;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #BB86FC;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #6200EE;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random 15-Letter Key Generator</h1>
+    <div id="key">Click "Generate" to get a key!</div>
+    <button onclick="generateKey()">Generate</button>
+
+    <script>
+        function generateKey() {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 15; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                result += characters[randomIndex];
+            }
+            document.getElementById('key').innerText = result;
+        }
+    </script>
+</body>
+</html>
